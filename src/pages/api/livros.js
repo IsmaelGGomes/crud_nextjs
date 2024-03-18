@@ -8,8 +8,12 @@ export default function handler(req, res) {
             break;
         case 'POST':
             // res.status(201).json({ nome: "POST"});
-            console.log('aqui');
             postLivros(req, res);
+            break;
+        case 'DELETE':
+            // res.status(201).json({ nome: "POST"});
+            console.log('aqui');
+            deleteLivros(req, res);
             break;
         default:
             res.status(405).json({});
@@ -26,6 +30,12 @@ async function postLivros(req, res) {
 async function getLivros(req, res) {
     let livros = await Livro.find({});
     res.status(200).json(livros);
+}
+
+async function deleteLivros(req, res) {
+    const { id } = req.query;
+    await Livro.deleteOne({ _id: new ObjectId(id) });
+    res.status(200).json({ message: "Livro deletado com sucesso!" });
 }
 
 //curl -X GET http://localhost:3000/api/categorias -v 
