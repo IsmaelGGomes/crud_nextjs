@@ -52,9 +52,9 @@ export default function Livros() {
             })
     }, []);
 
-    const deleteItem = async (id) => {
+    const deleteItem = async (_id) => {
         try {
-            let res = await axios.delete(`/api/livros/${id}`);
+            let res = await axios.delete(`/api/livros/${_id}`);
             // router.push("/livros");
             if (res.statusCode === 200) {
                 alert("removido com sucesso");

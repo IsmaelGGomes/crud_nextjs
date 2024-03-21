@@ -32,9 +32,10 @@ async function getLivros(req, res) {
     res.status(200).json(livros);
 }
 
-async function deleteLivros(req, res) {
-    const { id } = req.query;
-    await Livro.deleteOne({ _id: new ObjectId(id) });
+async function deleteLivros(request, res) {
+    const { id } = request.nextUrl.searchParams.get('id');
+    console.log(id);
+    await Livro.findByIdAndDelete(id);
     res.status(200).json({ message: "Livro deletado com sucesso!" });
 }
 
