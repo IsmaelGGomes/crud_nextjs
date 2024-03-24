@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/dialog"
 
 export default function NovaCategoria() {
-
     const [titulo, setTitulo] = useState("");
     const [preco, setPreco] = useState("");
     const [pagina, setPagina] = useState("");

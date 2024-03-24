@@ -13,6 +13,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import List from "@/components/home/listagem_id/list";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -36,11 +37,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from "@/components/ui/button";
 import { DotsHorizontalIcon, TrashIcon, EyeOpenIcon, PlusIcon } from "@radix-ui/react-icons";
 import NovaCategoria from "./adicionar/page";
+import Listagem from "./listagem";
 
 export default function Livros() {
     const [livros, setLivros] = useState([]);
     const [isAdd, setIsAdd] = useState(false);
     const [open, setOpen] = useState(false);
+    const [list_modal, setList_modal] = useState(false);
+    const [editData, setEditData] = useState({});
 
     useEffect(() => {
         axios.get("/api/livros")
@@ -52,16 +56,27 @@ export default function Livros() {
             })
     }, []);
 
-    const deleteItem = async (_id) => {
+    const deleteItem = async (id) => {
         try {
-            let res = await axios.delete(`/api/livros/${_id}`);
+            let res = await axios.delete(`/api/livros?id=${id}`);
             // router.push("/livros");
+            // setEditData(res.data);
             if (res.statusCode === 200) {
                 alert("removido com sucesso");
             }
         } catch (err) {
             console.error("Erro na requisicao");
         }
+    }
+
+    const getEditItem = async (id) => {
+        await axios.get(`/api/livros?id=${id}`).then((res) => {
+            setEditData(res.data[0]);
+        }).catch((err) => {
+            console.error("Erro na requisicao",err);
+        });
+        // router.push("/livros");
+        // alert("Categoria Cadastrada com Sucesso");
     }
 
     return (
@@ -72,9 +87,9 @@ export default function Livros() {
             <div className="my-2 mb-4 flex justify-end">
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
-                        <Button ><PlusIcon className="mr-2"/>Adicionar Livro</Button>
+                        <Button ><PlusIcon className="mr-2" />Adicionar Livro</Button>
                     </DialogTrigger>
-                    <NovaCategoria/>
+                    <NovaCategoria />
                 </Dialog>
             </div>
             <div className="rounded-md border">
@@ -123,27 +138,36 @@ export default function Livros() {
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={()=>deleteItem(item._id)}>Continuar</AlertDialogAction>
+                                                        <AlertDialogAction onClick={() => deleteItem(item._id)}>Continuar</AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>
-                                            <Dialog>
+                                            {/* <Dialog open={list_modal} onOpenChange={setList_modal}>
                                                 <DialogTrigger>
-                                                    <DropdownMenuItem className="cursor-pointer" onSelect={(e) => e.preventDefault()}>
-                                                        <EyeOpenIcon className="h-4 w-4 mr-2" />
-                                                        Visualizar
+                                                    <DropdownMenuItem 
+                                                        className="cursor-pointer" 
+                                                        onSelect={(e) => e.preventDefault()}
+                                                        onClick={getEditItem(item._id)}
+                                                    >
+                                                        <EyeOpenIcon className="h-4 w-4 mr-2" />Visualizar
                                                     </DropdownMenuItem>
                                                 </DialogTrigger>
-                                                <DialogContent>
-                                                    <DialogHeader>
-                                                        <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                                                        <DialogDescription>
-                                                            This action cannot be undone. This will permanently delete
-                                                            your account and remove your data from our servers.
-                                                        </DialogDescription>
-                                                    </DialogHeader>
-                                                </DialogContent>
-                                            </Dialog>
+                                                <Listagem data_id={2002} />
+                                            </Dialog> */}
+                                            <DropdownMenuItem
+                                                className="cursor-pointer"
+                                                onSelect={(e) => e.preventDefault()}
+                                                onClick={() => { getEditItem(item._id); setList_modal(true) }}
+                                            >
+                                                <EyeOpenIcon className="h-4 w-4 mr-2" />Visualizar
+                                            </DropdownMenuItem>
+                                            {list_modal && (
+                                                <Listagem
+                                                    data_id={editData}
+                                                    open={list_modal}
+                                                    onOpenChange={setList_modal}
+                                                />
+                                            )}
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
