@@ -2,18 +2,15 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Link from "next/link";
+
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
-    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import List from "@/components/home/listagem_id/list";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -25,26 +22,17 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
+
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { DotsHorizontalIcon, TrashIcon, EyeOpenIcon, PlusIcon } from "@radix-ui/react-icons";
+import { DotsHorizontalIcon, TrashIcon, EyeOpenIcon} from "@radix-ui/react-icons";
 import NovaCategoria from "./adicionar/page";
 import Listagem from "./listagem";
 
 export default function Livros() {
     const [livros, setLivros] = useState([]);
     const [isAdd, setIsAdd] = useState(false);
-    const [open, setOpen] = useState(false);
     const [list_modal, setList_modal] = useState(false);
-    const [editData, setEditData] = useState({});
 
     useEffect(() => {
         axios.get("/api/livros")
@@ -54,29 +42,24 @@ export default function Livros() {
             .catch(() => {
                 console.error("Erro na comunicacao com o Backend")
             })
-    }, []);
+    }, [isAdd]);
 
     const deleteItem = async (id) => {
         try {
             let res = await axios.delete(`/api/livros?id=${id}`);
             // router.push("/livros");
-            // setEditData(res.data);
-            if (res.statusCode === 200) {
-                alert("removido com sucesso");
-            }
+            setIsAdd(!isAdd)
         } catch (err) {
             console.error("Erro na requisicao");
         }
     }
 
-    const getEditItem = async (id) => {
-        await axios.get(`/api/livros?id=${id}`).then((res) => {
-            setEditData(res.data[0]);
-        }).catch((err) => {
-            console.error("Erro na requisicao",err);
-        });
-        // router.push("/livros");
-        // alert("Categoria Cadastrada com Sucesso");
+    const updateData = (newValue) => {
+        setIsAdd(newValue)
+    }
+
+    const setModal = (newValue) => {
+        setList_modal(newValue)
     }
 
     return (
@@ -85,12 +68,7 @@ export default function Livros() {
                 <h1 className="font-semibold text-2xl">Listagem de Livros</h1>
             </div>
             <div className="my-2 mb-4 flex justify-end">
-                <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger asChild>
-                        <Button ><PlusIcon className="mr-2" />Adicionar Livro</Button>
-                    </DialogTrigger>
-                    <NovaCategoria />
-                </Dialog>
+                <NovaCategoria updateData={updateData} setUpdate={isAdd} />
             </div>
             <div className="rounded-md border">
                 <Table>
@@ -120,7 +98,7 @@ export default function Livros() {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="flex flex-col">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
                                             <AlertDialog>
                                                 <AlertDialogTrigger>
@@ -142,30 +120,21 @@ export default function Livros() {
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>
-                                            {/* <Dialog open={list_modal} onOpenChange={setList_modal}>
-                                                <DialogTrigger>
-                                                    <DropdownMenuItem 
-                                                        className="cursor-pointer" 
-                                                        onSelect={(e) => e.preventDefault()}
-                                                        onClick={getEditItem(item._id)}
-                                                    >
-                                                        <EyeOpenIcon className="h-4 w-4 mr-2" />Visualizar
-                                                    </DropdownMenuItem>
-                                                </DialogTrigger>
-                                                <Listagem data_id={2002} />
-                                            </Dialog> */}
+                                            
                                             <DropdownMenuItem
                                                 className="cursor-pointer"
                                                 onSelect={(e) => e.preventDefault()}
-                                                onClick={() => { getEditItem(item._id); setList_modal(true) }}
+                                                onClick={() => { setModal(!list_modal) }}
                                             >
                                                 <EyeOpenIcon className="h-4 w-4 mr-2" />Visualizar
                                             </DropdownMenuItem>
                                             {list_modal && (
                                                 <Listagem
-                                                    data_id={editData}
+                                                    data_id={item._id}
                                                     open={list_modal}
-                                                    onOpenChange={setList_modal}
+                                                    onOpenChange={setModal}
+                                                    updateData={updateData}
+                                                    setUpdate={isAdd}
                                                 />
                                             )}
                                         </DropdownMenuContent>
