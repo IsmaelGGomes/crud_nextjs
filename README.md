@@ -11,17 +11,23 @@ yarn dev
 pnpm dev
 # ou
 bun dev
+
+- Definir as variáveis de ambiente no arquivo .env
+    - DB_USER
+    - DB_PASSWORD
+    - DB_NAME
 ```
 
 Abra [http://localhost:3000/livro](http://localhost:3000/livro) com seu navegador para ver o resultado.
 
-## Biblioteca usadas
+## Biblioteca usadas e Tecnologias
 
 - TailwindCSS
 - [Shadcn UI](https://ui.shadcn.com/)
 - [Radix UI](https://www.radix-ui.com/)
 - dotenv
 - mongoose
+- Banco de dados MongoDB
 
 ## Funcionalidades
 
